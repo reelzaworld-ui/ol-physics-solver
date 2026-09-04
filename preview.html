@@ -1,0 +1,2548 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>O/L Physics Formula Solver | Sri Lanka</title>
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<!-- KaTeX -->
+<link rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+
+<script defer
+src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js">
+</script>
+
+<style>
+:root{
+    --bg:#07111f;
+    --bg2:#0b1728;
+    --card:#101f33;
+    --card2:#142740;
+    --text:#f7fbff;
+    --muted:#91a6bd;
+    --primary:#5b7cfa;
+    --secondary:#7c3aed;
+    --cyan:#22d3ee;
+    --green:#22c55e;
+    --yellow:#facc15;
+    --red:#fb7185;
+    --border:rgba(255,255,255,.09);
+    --shadow:0 20px 60px rgba(0,0,0,.35);
+}
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    font-family:'Poppins','Noto Sans Sinhala',sans-serif;
+    background:
+        radial-gradient(circle at 10% 10%,rgba(91,124,250,.15),transparent 25%),
+        radial-gradient(circle at 90% 20%,rgba(124,58,237,.15),transparent 25%),
+        linear-gradient(135deg,var(--bg),#081827 55%,#0d1227);
+    color:var(--text);
+    min-height:100vh;
+    overflow-x:hidden;
+}
+
+/* Floating background */
+.bg-orb{
+    position:fixed;
+    width:350px;
+    height:350px;
+    border-radius:50%;
+    filter:blur(80px);
+    opacity:.12;
+    pointer-events:none;
+    z-index:-1;
+}
+
+.orb1{
+    background:#5b7cfa;
+    left:-150px;
+    top:250px;
+}
+
+.orb2{
+    background:#a855f7;
+    right:-160px;
+    top:700px;
+}
+
+.orb3{
+    background:#22d3ee;
+    left:40%;
+    bottom:-200px;
+}
+
+/* Loading screen */
+#loadingScreen{
+    position:fixed;
+    inset:0;
+    background:#050b14;
+    z-index:99999;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    transition:opacity .7s ease,visibility .7s ease;
+}
+
+#loadingScreen.hide{
+    opacity:0;
+    visibility:hidden;
+}
+
+.loader{
+    position:relative;
+    width:150px;
+    height:150px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.loader-ring{
+    position:absolute;
+    inset:0;
+    border-radius:50%;
+    border:3px solid transparent;
+    border-top-color:#5b7cfa;
+    border-right-color:#22d3ee;
+    animation:spin 1.2s linear infinite;
+}
+
+.loader-ring:nth-child(2){
+    inset:12px;
+    border-top-color:#a855f7;
+    border-right-color:#facc15;
+    animation-duration:1.7s;
+    animation-direction:reverse;
+}
+
+.loader-ring:nth-child(3){
+    inset:26px;
+    border-top-color:#22c55e;
+    animation-duration:2.2s;
+}
+
+.loader-core{
+    width:58px;
+    height:58px;
+    border-radius:18px;
+    background:linear-gradient(135deg,#5b7cfa,#7c3aed);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:26px;
+    box-shadow:0 0 40px rgba(91,124,250,.5);
+    animation:pulse 1.2s infinite;
+}
+
+.loading-title{
+    margin-top:30px;
+    font-size:25px;
+    font-weight:800;
+}
+
+.loading-sub{
+    color:var(--muted);
+    margin-top:8px;
+}
+
+.loading-dots{
+    display:flex;
+    gap:7px;
+    margin-top:18px;
+}
+
+.loading-dots span{
+    width:8px;
+    height:8px;
+    background:#5b7cfa;
+    border-radius:50%;
+    animation:bounce .8s infinite;
+}
+
+.loading-dots span:nth-child(2){
+    animation-delay:.15s;
+}
+
+.loading-dots span:nth-child(3){
+    animation-delay:.3s;
+}
+
+@keyframes spin{
+    to{transform:rotate(360deg)}
+}
+
+@keyframes pulse{
+    50%{transform:scale(1.1)}
+}
+
+@keyframes bounce{
+    50%{transform:translateY(-8px);opacity:.5}
+}
+
+/* Navbar */
+.navbar{
+    position:sticky;
+    top:0;
+    z-index:1000;
+    backdrop-filter:blur(20px);
+    background:rgba(5,12,23,.78);
+    border-bottom:1px solid var(--border);
+}
+
+.nav-inner{
+    max-width:1400px;
+    margin:auto;
+    padding:15px 25px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    font-weight:900;
+}
+
+.brand-icon{
+    width:45px;
+    height:45px;
+    border-radius:14px;
+    background:linear-gradient(135deg,#5b7cfa,#7c3aed);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:23px;
+    box-shadow:0 8px 30px rgba(91,124,250,.3);
+}
+
+.brand-text span{
+    display:block;
+}
+
+.brand-main{
+    font-size:16px;
+}
+
+.brand-sub{
+    font-size:10px;
+    color:var(--muted);
+    font-weight:600;
+    letter-spacing:1px;
+}
+
+.nav-actions{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.lang-btn,
+.theme-btn{
+    border:1px solid var(--border);
+    background:rgba(255,255,255,.05);
+    color:white;
+    border-radius:12px;
+    padding:9px 13px;
+    cursor:pointer;
+    transition:.25s;
+    font-family:inherit;
+}
+
+.lang-btn:hover,
+.theme-btn:hover{
+    background:rgba(255,255,255,.1);
+}
+
+/* Hero */
+.hero{
+    max-width:1400px;
+    margin:auto;
+    padding:70px 25px 45px;
+    display:grid;
+    grid-template-columns:1.25fr .75fr;
+    gap:40px;
+    align-items:center;
+}
+
+.badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    border:1px solid rgba(91,124,250,.3);
+    background:rgba(91,124,250,.1);
+    padding:8px 13px;
+    border-radius:999px;
+    color:#b9c6ff;
+    font-size:12px;
+    font-weight:700;
+}
+
+.hero h1{
+    font-size:clamp(38px,6vw,76px);
+    line-height:1.03;
+    margin-top:20px;
+    font-weight:900;
+    letter-spacing:-3px;
+}
+
+.gradient-text{
+    background:linear-gradient(90deg,#7c9cff,#22d3ee,#c084fc);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+}
+
+.hero p{
+    max-width:700px;
+    margin-top:20px;
+    color:#aab9cb;
+    font-size:16px;
+    line-height:1.9;
+}
+
+.hero-buttons{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-top:28px;
+}
+
+.btn{
+    border:0;
+    border-radius:14px;
+    padding:13px 19px;
+    font-family:inherit;
+    font-weight:800;
+    cursor:pointer;
+    transition:.25s;
+}
+
+.btn-primary{
+    background:linear-gradient(135deg,#5b7cfa,#7c3aed);
+    color:white;
+    box-shadow:0 12px 35px rgba(91,124,250,.25);
+}
+
+.btn-primary:hover{
+    transform:translateY(-3px);
+}
+
+.btn-secondary{
+    background:rgba(255,255,255,.05);
+    color:white;
+    border:1px solid var(--border);
+}
+
+/* Hero visual */
+.hero-visual{
+    min-height:350px;
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.atom{
+    width:260px;
+    height:260px;
+    position:relative;
+}
+
+.atom-core{
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    width:85px;
+    height:85px;
+    border-radius:25px;
+    background:linear-gradient(135deg,#5b7cfa,#7c3aed);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:36px;
+    box-shadow:0 0 60px rgba(91,124,250,.5);
+    z-index:4;
+}
+
+.orbit{
+    position:absolute;
+    left:50%;
+    top:50%;
+    border:1px solid rgba(124,156,255,.4);
+    border-radius:50%;
+    transform:translate(-50%,-50%);
+}
+
+.orbit1{
+    width:160px;
+    height:70px;
+    animation:orbit 4s linear infinite;
+}
+
+.orbit2{
+    width:230px;
+    height:100px;
+    transform:translate(-50%,-50%) rotate(60deg);
+    animation:orbit2 5s linear infinite;
+}
+
+.orbit3{
+    width:250px;
+    height:130px;
+    transform:translate(-50%,-50%) rotate(-60deg);
+    animation:orbit3 6s linear infinite;
+}
+
+.electron{
+    position:absolute;
+    width:13px;
+    height:13px;
+    border-radius:50%;
+    background:#22d3ee;
+    box-shadow:0 0 20px #22d3ee;
+    left:50%;
+    top:50%;
+}
+
+.e1{
+    transform:translate(-50%,-50%) translateX(80px);
+}
+
+.e2{
+    transform:translate(-50%,-50%) translateX(-115px);
+}
+
+.e3{
+    transform:translate(-50%,-50%) translateY(-70px);
+}
+
+@keyframes orbit{
+    to{transform:translate(-50%,-50%) rotate(360deg)}
+}
+
+@keyframes orbit2{
+    to{transform:translate(-50%,-50%) rotate(420deg)}
+}
+
+@keyframes orbit3{
+    to{transform:translate(-50%,-50%) rotate(-420deg)}
+}
+
+/* Main */
+.container{
+    max-width:1400px;
+    margin:auto;
+    padding:20px 25px 80px;
+}
+
+/* Stats */
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+    margin-bottom:35px;
+}
+
+.stat{
+    background:rgba(255,255,255,.045);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:20px;
+    position:relative;
+    overflow:hidden;
+}
+
+.stat::before{
+    content:"";
+    position:absolute;
+    width:100px;
+    height:100px;
+    background:#5b7cfa;
+    filter:blur(60px);
+    opacity:.15;
+    right:-30px;
+    top:-30px;
+}
+
+.stat-number{
+    font-size:28px;
+    font-weight:900;
+}
+
+.stat-label{
+    color:var(--muted);
+    font-size:12px;
+    margin-top:4px;
+}
+
+/* Grade tabs */
+.grade-tabs{
+    display:flex;
+    gap:10px;
+    margin-bottom:25px;
+}
+
+.grade-tab{
+    flex:1;
+    border:1px solid var(--border);
+    background:rgba(255,255,255,.04);
+    color:#aebed0;
+    border-radius:16px;
+    padding:17px;
+    cursor:pointer;
+    font-family:inherit;
+    font-weight:800;
+    transition:.25s;
+}
+
+.grade-tab.active{
+    background:linear-gradient(135deg,rgba(91,124,250,.25),rgba(124,58,237,.22));
+    color:white;
+    border-color:rgba(91,124,250,.5);
+    box-shadow:0 10px 30px rgba(91,124,250,.12);
+}
+
+/* Search */
+.search-box{
+    position:relative;
+    margin-bottom:25px;
+}
+
+.search-box input{
+    width:100%;
+    padding:17px 50px 17px 20px;
+    border-radius:16px;
+    border:1px solid var(--border);
+    background:rgba(255,255,255,.045);
+    color:white;
+    outline:none;
+    font-family:inherit;
+    font-size:14px;
+}
+
+.search-box input:focus{
+    border-color:#5b7cfa;
+    box-shadow:0 0 0 4px rgba(91,124,250,.08);
+}
+
+.search-icon{
+    position:absolute;
+    right:18px;
+    top:50%;
+    transform:translateY(-50%);
+    color:#7d91a8;
+}
+
+/* Lessons */
+.lesson-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:16px;
+}
+
+.lesson-card{
+    background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.025));
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:20px;
+    cursor:pointer;
+    transition:.3s;
+    position:relative;
+    overflow:hidden;
+}
+
+.lesson-card:hover{
+    transform:translateY(-5px);
+    border-color:rgba(91,124,250,.4);
+    box-shadow:var(--shadow);
+}
+
+.lesson-number{
+    font-size:11px;
+    color:#8fa3ba;
+    font-weight:800;
+}
+
+.lesson-icon{
+    width:48px;
+    height:48px;
+    border-radius:14px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(91,124,250,.12);
+    font-size:23px;
+    margin:15px 0;
+}
+
+.lesson-card h3{
+    font-size:16px;
+}
+
+.lesson-card p{
+    color:var(--muted);
+    font-size:12px;
+    margin-top:7px;
+    line-height:1.6;
+}
+
+.lesson-count{
+    margin-top:15px;
+    font-size:11px;
+    color:#90a4bb;
+}
+
+/* Formula area */
+#formulaSection{
+    display:none;
+    margin-top:30px;
+}
+
+.section-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    margin-bottom:20px;
+}
+
+.section-head h2{
+    font-size:25px;
+}
+
+.back-btn{
+    background:rgba(255,255,255,.05);
+    border:1px solid var(--border);
+    color:white;
+    border-radius:12px;
+    padding:9px 13px;
+    cursor:pointer;
+    font-family:inherit;
+}
+
+/* Formula cards */
+.formula-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:18px;
+}
+
+.formula-card{
+    background:linear-gradient(145deg,#0e1d31,#10243b);
+    border:1px solid var(--border);
+    border-radius:22px;
+    padding:22px;
+    transition:.25s;
+    overflow:hidden;
+}
+
+.formula-card:hover{
+    border-color:rgba(91,124,250,.35);
+}
+
+.formula-top{
+    display:flex;
+    justify-content:space-between;
+    gap:15px;
+}
+
+.formula-title{
+    font-weight:800;
+    font-size:16px;
+}
+
+.formula-tag{
+    font-size:10px;
+    padding:5px 8px;
+    border-radius:7px;
+    background:rgba(34,211,238,.08);
+    color:#67e8f9;
+    white-space:nowrap;
+}
+
+.equation{
+    min-height:75px;
+    margin:18px 0;
+    padding:18px;
+    background:rgba(0,0,0,.17);
+    border-radius:15px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:auto;
+}
+
+.katex{
+    font-size:1.55em;
+}
+
+.variable-info{
+    display:flex;
+    flex-wrap:wrap;
+    gap:7px;
+    margin-bottom:17px;
+}
+
+.variable-pill{
+    background:rgba(255,255,255,.045);
+    border:1px solid var(--border);
+    border-radius:9px;
+    padding:7px 9px;
+    font-size:11px;
+    color:#aab9ca;
+}
+
+.solve-btn{
+    width:100%;
+    padding:12px;
+    border-radius:13px;
+    border:0;
+    color:white;
+    background:linear-gradient(135deg,#5b7cfa,#7c3aed);
+    cursor:pointer;
+    font-family:inherit;
+    font-weight:800;
+    transition:.25s;
+}
+
+.solve-btn:hover{
+    transform:translateY(-2px);
+}
+
+/* Solver Modal */
+.modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.75);
+    backdrop-filter:blur(12px);
+    z-index:5000;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+
+.modal.show{
+    display:flex;
+}
+
+.modal-box{
+    width:min(650px,100%);
+    max-height:90vh;
+    overflow-y:auto;
+    background:#0c192b;
+    border:1px solid var(--border);
+    border-radius:25px;
+    padding:25px;
+    box-shadow:0 30px 100px rgba(0,0,0,.6);
+    animation:modalIn .3s ease;
+}
+
+@keyframes modalIn{
+    from{opacity:0;transform:translateY(20px) scale(.97)}
+    to{opacity:1;transform:none}
+}
+
+.modal-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:15px;
+}
+
+.close-btn{
+    width:38px;
+    height:38px;
+    border-radius:12px;
+    border:1px solid var(--border);
+    background:rgba(255,255,255,.05);
+    color:white;
+    cursor:pointer;
+    font-size:20px;
+}
+
+.solver-equation{
+    margin:20px 0;
+    padding:20px;
+    background:rgba(91,124,250,.07);
+    border:1px solid rgba(91,124,250,.15);
+    border-radius:16px;
+    text-align:center;
+}
+
+.find-label{
+    color:var(--muted);
+    font-size:12px;
+    margin-bottom:8px;
+}
+
+.select-wrap select{
+    width:100%;
+    background:#101f33;
+    color:white;
+    border:1px solid var(--border);
+    padding:13px;
+    border-radius:12px;
+    outline:none;
+    font-family:inherit;
+}
+
+.inputs{
+    display:grid;
+    gap:12px;
+    margin-top:18px;
+}
+
+.input-row{
+    display:grid;
+    grid-template-columns:1fr 140px;
+    gap:10px;
+    align-items:center;
+}
+
+.input-row label{
+    font-size:13px;
+}
+
+.input-row small{
+    display:block;
+    color:#758ba2;
+    font-size:10px;
+    margin-top:3px;
+}
+
+.input-row input{
+    width:100%;
+    padding:12px;
+    background:rgba(255,255,255,.04);
+    border:1px solid var(--border);
+    color:white;
+    border-radius:11px;
+    outline:none;
+    font-family:inherit;
+}
+
+.input-row input:focus{
+    border-color:#5b7cfa;
+}
+
+.calculate-btn{
+    width:100%;
+    margin-top:20px;
+    padding:14px;
+    border-radius:13px;
+    border:0;
+    color:white;
+    background:linear-gradient(135deg,#22c55e,#16a34a);
+    font-family:inherit;
+    font-weight:900;
+    cursor:pointer;
+    font-size:14px;
+}
+
+/* Cartoon calculation animation */
+.calculation-stage{
+    display:none;
+    margin-top:20px;
+    background:#07111f;
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:20px;
+    text-align:center;
+}
+
+.calculation-stage.show{
+    display:block;
+}
+
+.cartoon{
+    width:110px;
+    height:110px;
+    margin:0 auto 15px;
+    position:relative;
+}
+
+.cartoon-head{
+    width:70px;
+    height:70px;
+    background:#ffd7a8;
+    border-radius:50%;
+    position:absolute;
+    left:20px;
+    top:10px;
+    border:3px solid #f0b27a;
+    animation:thinking .8s infinite alternate;
+}
+
+.cartoon-hair{
+    position:absolute;
+    width:50px;
+    height:23px;
+    background:#202938;
+    border-radius:30px 30px 8px 8px;
+    left:30px;
+    top:4px;
+}
+
+.eye{
+    position:absolute;
+    width:7px;
+    height:7px;
+    background:#172033;
+    border-radius:50%;
+    top:38px;
+}
+
+.eye1{left:38px}
+.eye2{left:63px}
+
+.cartoon-mouth{
+    position:absolute;
+    width:22px;
+    height:9px;
+    border-bottom:3px solid #172033;
+    border-radius:50%;
+    left:44px;
+    top:52px;
+}
+
+.body{
+    width:60px;
+    height:35px;
+    position:absolute;
+    left:25px;
+    top:77px;
+    background:#5b7cfa;
+    border-radius:20px 20px 8px 8px;
+}
+
+.thinking-dot{
+    position:absolute;
+    width:8px;
+    height:8px;
+    background:#22d3ee;
+    border-radius:50%;
+    right:0;
+    top:25px;
+    animation:dotfloat 1s infinite;
+}
+
+.thinking-dot:nth-child(2){
+    right:-15px;
+    top:10px;
+    animation-delay:.2s;
+}
+
+.thinking-dot:nth-child(3){
+    right:-27px;
+    top:0;
+    animation-delay:.4s;
+}
+
+@keyframes thinking{
+    from{transform:rotate(-3deg)}
+    to{transform:rotate(3deg) translateY(-3px)}
+}
+
+@keyframes dotfloat{
+    50%{transform:translateY(-7px);opacity:.4}
+}
+
+.calc-text{
+    color:#9db0c4;
+    font-size:12px;
+}
+
+.result-box{
+    display:none;
+    margin-top:20px;
+    background:linear-gradient(135deg,rgba(34,197,94,.1),rgba(34,211,238,.06));
+    border:1px solid rgba(34,197,94,.25);
+    border-radius:18px;
+    padding:20px;
+}
+
+.result-box.show{
+    display:block;
+    animation:resultIn .5s ease;
+}
+
+@keyframes resultIn{
+    from{opacity:0;transform:translateY(10px)}
+    to{opacity:1;transform:none}
+}
+
+.result-label{
+    color:#86efac;
+    font-size:12px;
+    font-weight:700;
+}
+
+.result-value{
+    font-size:34px;
+    font-weight:900;
+    margin-top:5px;
+}
+
+.working{
+    margin-top:12px;
+    color:#9bb0c6;
+    font-size:12px;
+    line-height:1.8;
+}
+
+/* Footer */
+footer{
+    border-top:1px solid var(--border);
+    margin-top:30px;
+    padding:35px 25px;
+    text-align:center;
+    color:#71859b;
+    font-size:12px;
+}
+
+.footer-title{
+    color:white;
+    font-weight:800;
+    margin-bottom:7px;
+}
+
+/* Toast */
+.toast{
+    position:fixed;
+    bottom:25px;
+    right:25px;
+    background:#101f33;
+    border:1px solid var(--border);
+    color:white;
+    padding:13px 17px;
+    border-radius:13px;
+    box-shadow:var(--shadow);
+    transform:translateY(100px);
+    opacity:0;
+    transition:.3s;
+    z-index:9999;
+    font-size:12px;
+}
+
+.toast.show{
+    transform:none;
+    opacity:1;
+}
+
+/* Responsive */
+@media(max-width:1000px){
+    .hero{
+        grid-template-columns:1fr;
+        text-align:center;
+    }
+
+    .hero p{
+        margin-left:auto;
+        margin-right:auto;
+    }
+
+    .hero-buttons{
+        justify-content:center;
+    }
+
+    .lesson-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .formula-grid{
+        grid-template-columns:1fr;
+    }
+}
+
+@media(max-width:700px){
+    .nav-inner{
+        padding:12px 15px;
+    }
+
+    .brand-sub{
+        display:none;
+    }
+
+    .hero{
+        padding:45px 15px 25px;
+    }
+
+    .hero h1{
+        letter-spacing:-2px;
+    }
+
+    .container{
+        padding-left:15px;
+        padding-right:15px;
+    }
+
+    .stats{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .lesson-grid{
+        grid-template-columns:1fr;
+    }
+
+    .grade-tabs{
+        flex-direction:column;
+    }
+
+    .input-row{
+        grid-template-columns:1fr;
+    }
+
+    .atom{
+        transform:scale(.8);
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+
+<!-- LOADING -->
+<div id="loadingScreen">
+    <div class="loader">
+        <div class="loader-ring"></div>
+        <div class="loader-ring"></div>
+        <div class="loader-ring"></div>
+        <div class="loader-core">⚛</div>
+    </div>
+
+    <div class="loading-title">O/L Physics Solver</div>
+    <div class="loading-sub">Physics formulas loading...</div>
+
+    <div class="loading-dots">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+</div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="nav-inner">
+
+        <div class="brand">
+            <div class="brand-icon">⚡</div>
+
+            <div class="brand-text">
+                <span class="brand-main">O/L Physics Solver</span>
+                <span class="brand-sub">SRI LANKA • SCIENCE</span>
+            </div>
+        </div>
+
+        <div class="nav-actions">
+            <button class="lang-btn" onclick="toggleLanguage()" id="languageButton">
+                සිං
+            </button>
+
+            <button class="theme-btn" onclick="showAbout()">
+                ℹ️
+            </button>
+        </div>
+
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+
+    <div>
+        <div class="badge">
+            🇱🇰 Sri Lankan O/L Science
+        </div>
+
+        <h1>
+            Physics<br>
+            <span class="gradient-text">Formula Solver</span>
+        </h1>
+
+        <p id="heroDescription">
+            O/L Physics සූත්‍ර පාඩමෙන් පාඩමට ඉගෙනගන්න.
+            අවශ්‍ය සූත්‍රය තෝරලා, හොයන්න ඕන quantity එක තෝරලා,
+            දත්ත ඇතුළත් කළාම step-by-step පිළිතුර ලබාගන්න.
+        </p>
+
+        <div class="hero-buttons">
+            <button class="btn btn-primary" onclick="scrollToLessons()">
+                🚀 Start Solving
+            </button>
+
+            <button class="btn btn-secondary" onclick="showQuickGuide()">
+                📘 Quick Guide
+            </button>
+        </div>
+    </div>
+
+    <div class="hero-visual">
+
+        <div class="atom">
+
+            <div class="orbit orbit1"></div>
+            <div class="orbit orbit2"></div>
+            <div class="orbit orbit3"></div>
+
+            <div class="electron e1"></div>
+            <div class="electron e2"></div>
+            <div class="electron e3"></div>
+
+            <div class="atom-core">
+                ⚛
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<main class="container" id="lessons">
+
+    <!-- STATS -->
+    <div class="stats">
+
+        <div class="stat">
+            <div class="stat-number" id="formulaCount">25+</div>
+            <div class="stat-label">Interactive formulas</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-number">2</div>
+            <div class="stat-label">Grades</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-number">∞</div>
+            <div class="stat-label">Calculations</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-number">24/7</div>
+            <div class="stat-label">Revision</div>
+        </div>
+
+    </div>
+
+    <!-- GRADE TABS -->
+    <div class="grade-tabs">
+
+        <button class="grade-tab active"
+                onclick="changeGrade(10,this)">
+            🎓 Grade 10
+        </button>
+
+        <button class="grade-tab"
+                onclick="changeGrade(11,this)">
+            🎓 Grade 11
+        </button>
+
+    </div>
+
+    <!-- SEARCH -->
+    <div class="search-box">
+
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="🔎 Search lesson or formula..."
+            oninput="searchLessons()">
+
+        <div class="search-icon">⌕</div>
+
+    </div>
+
+    <!-- LESSONS -->
+    <div id="lessonGrid" class="lesson-grid"></div>
+
+    <!-- FORMULAS -->
+    <section id="formulaSection">
+
+        <div class="section-head">
+
+            <div>
+                <div class="badge">INTERACTIVE FORMULAS</div>
+                <h2 id="selectedLessonTitle" style="margin-top:10px;">
+                    Lesson
+                </h2>
+            </div>
+
+            <button class="back-btn" onclick="backToLessons()">
+                ← Back
+            </button>
+
+        </div>
+
+        <div id="formulaGrid" class="formula-grid"></div>
+
+    </section>
+
+</main>
+
+<!-- SOLVER MODAL -->
+<div class="modal" id="solverModal">
+
+    <div class="modal-box">
+
+        <div class="modal-head">
+
+            <div>
+                <div class="badge">FORMULA SOLVER</div>
+
+                <h2 id="solverTitle" style="margin-top:10px;">
+                    Formula
+                </h2>
+            </div>
+
+            <button class="close-btn" onclick="closeSolver()">
+                ×
+            </button>
+
+        </div>
+
+        <div class="solver-equation" id="solverEquation"></div>
+
+        <div class="find-label">
+            What do you want to find?
+        </div>
+
+        <div class="select-wrap">
+            <select id="targetVariable"
+                    onchange="renderInputs()">
+            </select>
+        </div>
+
+        <div class="inputs" id="solverInputs"></div>
+
+        <button class="calculate-btn" onclick="startCalculation()">
+            🧮 Calculate Answer
+        </button>
+
+        <!-- cartoon -->
+        <div class="calculation-stage" id="calculationStage">
+
+            <div class="cartoon">
+
+                <div class="cartoon-head">
+                    <div class="cartoon-hair"></div>
+                    <div class="eye eye1"></div>
+                    <div class="eye eye2"></div>
+                    <div class="cartoon-mouth"></div>
+                </div>
+
+                <div class="body"></div>
+
+                <div class="thinking-dot"></div>
+                <div class="thinking-dot"></div>
+                <div class="thinking-dot"></div>
+
+            </div>
+
+            <div class="calc-text" id="calcText">
+                Formula එක calculate කරමින්...
+            </div>
+
+        </div>
+
+        <!-- RESULT -->
+        <div class="result-box" id="resultBox">
+
+            <div class="result-label">
+                ANSWER
+            </div>
+
+            <div class="result-value" id="resultValue">
+                —
+            </div>
+
+            <div class="working" id="working">
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<footer>
+
+    <div class="footer-title">
+        ⚡ O/L Physics Formula Solver
+    </div>
+
+    <div>
+        Built for Sri Lankan O/L students • Learn • Calculate • Revise
+    </div>
+
+</footer>
+
+<script>
+
+/* =========================================================
+   DATA
+========================================================= */
+
+const physicsData = {
+
+10: [
+
+{
+    id:"motion",
+    title:"Motion in a Straight Line",
+    si:"සරල රේඛීය චලිතය",
+    icon:"🏃",
+    formulas:[
+        {
+            name:"Speed – Distance – Time",
+            equation:"v = \\frac{d}{t}",
+            vars:{
+                v:{label:"Speed",unit:"m/s"},
+                d:{label:"Distance",unit:"m"},
+                t:{label:"Time",unit:"s"}
+            },
+            solve:{
+                v:(x)=>x.d/x.t,
+                d:(x)=>x.v*x.t,
+                t:(x)=>x.d/x.v
+            },
+            working:{
+                v:(x,r)=>`v = d ÷ t = ${x.d} ÷ ${x.t} = ${r} m/s`,
+                d:(x,r)=>`d = v × t = ${x.v} × ${x.t} = ${r} m`,
+                t:(x,r)=>`t = d ÷ v = ${x.d} ÷ ${x.v} = ${r} s`
+            }
+        },
+
+        {
+            name:"Average Speed",
+            equation:"v_{avg}=\\frac{\\text{total distance}}{\\text{total time}}",
+            vars:{
+                v:{label:"Average Speed",unit:"m/s"},
+                d:{label:"Total Distance",unit:"m"},
+                t:{label:"Total Time",unit:"s"}
+            },
+            solve:{
+                v:(x)=>x.d/x.t,
+                d:(x)=>x.v*x.t,
+                t:(x)=>x.d/x.v
+            },
+            working:{
+                v:(x,r)=>`Average speed = total distance ÷ total time = ${x.d} ÷ ${x.t} = ${r} m/s`,
+                d:(x,r)=>`Distance = speed × time = ${x.v} × ${x.t} = ${r} m`,
+                t:(x,r)=>`Time = distance ÷ speed = ${x.d} ÷ ${x.v} = ${r} s`
+            }
+        }
+    ]
+},
+
+{
+    id:"newton",
+    title:"Newton's Laws of Motion",
+    si:"නිව්ටන්ගේ චලිත නියම",
+    icon:"🍎",
+    formulas:[
+        {
+            name:"Newton's Second Law",
+            equation:"F = ma",
+            vars:{
+                F:{label:"Force",unit:"N"},
+                m:{label:"Mass",unit:"kg"},
+                a:{label:"Acceleration",unit:"m/s²"}
+            },
+            solve:{
+                F:(x)=>x.m*x.a,
+                m:(x)=>x.F/x.a,
+                a:(x)=>x.F/x.m
+            },
+            working:{
+                F:(x,r)=>`F = m × a = ${x.m} × ${x.a} = ${r} N`,
+                m:(x,r)=>`m = F ÷ a = ${x.F} ÷ ${x.a} = ${r} kg`,
+                a:(x,r)=>`a = F ÷ m = ${x.F} ÷ ${x.m} = ${r} m/s²`
+            }
+        }
+    ]
+},
+
+{
+    id:"friction",
+    title:"Friction",
+    si:"ඝර්ෂණය",
+    icon:"🛞",
+    formulas:[
+        {
+            name:"Frictional Force",
+            equation:"F_f = \\mu R",
+            vars:{
+                F:{label:"Frictional Force",unit:"N"},
+                mu:{label:"Coefficient of friction",unit:""},
+                R:{label:"Normal reaction",unit:"N"}
+            },
+            solve:{
+                F:(x)=>x.mu*x.R,
+                mu:(x)=>x.F/x.R,
+                R:(x)=>x.F/x.mu
+            },
+            working:{
+                F:(x,r)=>`F = μ × R = ${x.mu} × ${x.R} = ${r} N`,
+                mu:(x,r)=>`μ = F ÷ R = ${x.F} ÷ ${x.R} = ${r}`,
+                R:(x,r)=>`R = F ÷ μ = ${x.F} ÷ ${x.mu} = ${r} N`
+            }
+        }
+    ]
+},
+
+{
+    id:"turning",
+    title:"Turning Effect of a Force",
+    si:"බලයක හැරවුම් බලපෑම",
+    icon:"🔧",
+    formulas:[
+        {
+            name:"Moment of Force",
+            equation:"M = Fd",
+            vars:{
+                M:{label:"Moment",unit:"N m"},
+                F:{label:"Force",unit:"N"},
+                d:{label:"Perpendicular distance",unit:"m"}
+            },
+            solve:{
+                M:(x)=>x.F*x.d,
+                F:(x)=>x.M/x.d,
+                d:(x)=>x.M/x.F
+            },
+            working:{
+                M:(x,r)=>`M = F × d = ${x.F} × ${x.d} = ${r} N m`,
+                F:(x,r)=>`F = M ÷ d = ${x.M} ÷ ${x.d} = ${r} N`,
+                d:(x,r)=>`d = M ÷ F = ${x.M} ÷ ${x.F} = ${r} m`
+            }
+        }
+    ]
+},
+
+{
+    id:"pressure",
+    title:"Hydrostatic Pressure",
+    si:"ද්‍රවස්ථිතික පීඩනය",
+    icon:"💧",
+    formulas:[
+        {
+            name:"Pressure in a Liquid",
+            equation:"p = h\\rho g",
+            vars:{
+                p:{label:"Pressure",unit:"Pa"},
+                h:{label:"Height / depth",unit:"m"},
+                rho:{label:"Density",unit:"kg/m³"},
+                g:{label:"Gravitational acceleration",unit:"m/s²"}
+            },
+            solve:{
+                p:(x)=>x.h*x.rho*x.g,
+                h:(x)=>x.p/(x.rho*x.g),
+                rho:(x)=>x.p/(x.h*x.g),
+                g:(x)=>x.p/(x.h*x.rho)
+            },
+            working:{
+                p:(x,r)=>`p = hρg = ${x.h} × ${x.rho} × ${x.g} = ${r} Pa`,
+                h:(x,r)=>`h = p ÷ (ρg) = ${x.p} ÷ (${x.rho} × ${x.g}) = ${r} m`,
+                rho:(x,r)=>`ρ = p ÷ (hg) = ${x.p} ÷ (${x.h} × ${x.g}) = ${r} kg/m³`,
+                g:(x,r)=>`g = p ÷ (hρ) = ${x.p} ÷ (${x.h} × ${x.rho}) = ${r} m/s²`
+            }
+        }
+    ]
+},
+
+{
+    id:"work",
+    title:"Work, Energy & Power",
+    si:"කාර්යය, ශක්තිය හා ජවය",
+    icon:"⚡",
+    formulas:[
+        {
+            name:"Work Done",
+            equation:"W = Fs",
+            vars:{
+                W:{label:"Work",unit:"J"},
+                F:{label:"Force",unit:"N"},
+                s:{label:"Distance moved",unit:"m"}
+            },
+            solve:{
+                W:(x)=>x.F*x.s,
+                F:(x)=>x.W/x.s,
+                s:(x)=>x.W/x.F
+            },
+            working:{
+                W:(x,r)=>`W = F × s = ${x.F} × ${x.s} = ${r} J`,
+                F:(x,r)=>`F = W ÷ s = ${x.W} ÷ ${x.s} = ${r} N`,
+                s:(x,r)=>`s = W ÷ F = ${x.W} ÷ ${x.F} = ${r} m`
+            }
+        },
+
+        {
+            name:"Power",
+            equation:"P = \\frac{W}{t}",
+            vars:{
+                P:{label:"Power",unit:"W"},
+                W:{label:"Work / Energy",unit:"J"},
+                t:{label:"Time",unit:"s"}
+            },
+            solve:{
+                P:(x)=>x.W/x.t,
+                W:(x)=>x.P*x.t,
+                t:(x)=>x.W/x.P
+            },
+            working:{
+                P:(x,r)=>`P = W ÷ t = ${x.W} ÷ ${x.t} = ${r} W`,
+                W:(x,r)=>`W = P × t = ${x.P} × ${x.t} = ${r} J`,
+                t:(x,r)=>`t = W ÷ P = ${x.W} ÷ ${x.P} = ${r} s`
+            }
+        },
+
+        {
+            name:"Kinetic Energy",
+            equation:"E_k=\\frac{1}{2}mv^2",
+            vars:{
+                E:{label:"Kinetic Energy",unit:"J"},
+                m:{label:"Mass",unit:"kg"},
+                v:{label:"Velocity",unit:"m/s"}
+            },
+            solve:{
+                E:(x)=>0.5*x.m*x.v*x.v,
+                m:(x)=>2*x.E/(x.v*x.v),
+                v:(x)=>Math.sqrt((2*x.E)/x.m)
+            },
+            working:{
+                E:(x,r)=>`Ek = ½mv² = ½ × ${x.m} × ${x.v}² = ${r} J`,
+                m:(x,r)=>`m = 2E ÷ v² = 2 × ${x.E} ÷ ${x.v}² = ${r} kg`,
+                v:(x,r)=>`v = √(2E ÷ m) = √(2 × ${x.E} ÷ ${x.m}) = ${r} m/s`
+            }
+        },
+
+        {
+            name:"Gravitational Potential Energy",
+            equation:"E_p=mgh",
+            vars:{
+                E:{label:"Potential Energy",unit:"J"},
+                m:{label:"Mass",unit:"kg"},
+                g:{label:"Gravitational acceleration",unit:"m/s²"},
+                h:{label:"Height",unit:"m"}
+            },
+            solve:{
+                E:(x)=>x.m*x.g*x.h,
+                m:(x)=>x.E/(x.g*x.h),
+                g:(x)=>x.E/(x.m*x.h),
+                h:(x)=>x.E/(x.m*x.g)
+            },
+            working:{
+                E:(x,r)=>`Ep = mgh = ${x.m} × ${x.g} × ${x.h} = ${r} J`,
+                m:(x,r)=>`m = E ÷ gh = ${x.E} ÷ (${x.g} × ${x.h}) = ${r} kg`,
+                g:(x,r)=>`g = E ÷ mh = ${x.E} ÷ (${x.m} × ${x.h}) = ${r} m/s²`,
+                h:(x,r)=>`h = E ÷ mg = ${x.E} ÷ (${x.m} × ${x.g}) = ${r} m`
+            }
+        }
+    ]
+},
+
+{
+    id:"electricity10",
+    title:"Current Electricity",
+    si:"ධාරා විදුලිය",
+    icon:"🔋",
+    formulas:[
+        {
+            name:"Electrical Power",
+            equation:"P = VI",
+            vars:{
+                P:{label:"Power",unit:"W"},
+                V:{label:"Potential difference",unit:"V"},
+                I:{label:"Current",unit:"A"}
+            },
+            solve:{
+                P:(x)=>x.V*x.I,
+                V:(x)=>x.P/x.I,
+                I:(x)=>x.P/x.V
+            },
+            working:{
+                P:(x,r)=>`P = VI = ${x.V} × ${x.I} = ${r} W`,
+                V:(x,r)=>`V = P ÷ I = ${x.P} ÷ ${x.I} = ${r} V`,
+                I:(x,r)=>`I = P ÷ V = ${x.P} ÷ ${x.V} = ${r} A`
+            }
+        }
+    ]
+}
+
+],
+
+11:[
+
+{
+    id:"heat",
+    title:"Heat",
+    si:"තාපය",
+    icon:"🔥",
+    formulas:[
+        {
+            name:"Heat Energy",
+            equation:"Q=mc\\Delta T",
+            vars:{
+                Q:{label:"Heat energy",unit:"J"},
+                m:{label:"Mass",unit:"kg"},
+                c:{label:"Specific heat capacity",unit:"J kg⁻¹ K⁻¹"},
+                dT:{label:"Temperature change",unit:"K"}
+            },
+            solve:{
+                Q:(x)=>x.m*x.c*x.dT,
+                m:(x)=>x.Q/(x.c*x.dT),
+                c:(x)=>x.Q/(x.m*x.dT),
+                dT:(x)=>x.Q/(x.m*x.c)
+            },
+            working:{
+                Q:(x,r)=>`Q = mcΔT = ${x.m} × ${x.c} × ${x.dT} = ${r} J`,
+                m:(x,r)=>`m = Q ÷ (cΔT) = ${x.Q} ÷ (${x.c} × ${x.dT}) = ${r} kg`,
+                c:(x,r)=>`c = Q ÷ (mΔT) = ${x.Q} ÷ (${x.m} × ${x.dT}) = ${r} J kg⁻¹ K⁻¹`,
+                dT:(x,r)=>`ΔT = Q ÷ (mc) = ${x.Q} ÷ (${x.m} × ${x.c}) = ${r} K`
+            }
+        }
+    ]
+},
+
+{
+    id:"electricPower",
+    title:"Power & Energy of Electrical Appliances",
+    si:"විද්‍යුත් උපකරණවල ජවය හා ශක්තිය",
+    icon:"🔌",
+    formulas:[
+        {
+            name:"Electrical Power",
+            equation:"P=VI",
+            vars:{
+                P:{label:"Power",unit:"W"},
+                V:{label:"Voltage",unit:"V"},
+                I:{label:"Current",unit:"A"}
+            },
+            solve:{
+                P:(x)=>x.V*x.I,
+                V:(x)=>x.P/x.I,
+                I:(x)=>x.P/x.V
+            },
+            working:{
+                P:(x,r)=>`P = VI = ${x.V} × ${x.I} = ${r} W`,
+                V:(x,r)=>`V = P ÷ I = ${x.P} ÷ ${x.I} = ${r} V`,
+                I:(x,r)=>`I = P ÷ V = ${x.P} ÷ ${x.V} = ${r} A`
+            }
+        },
+
+        {
+            name:"Electrical Energy",
+            equation:"E=Pt",
+            vars:{
+                E:{label:"Electrical energy",unit:"J"},
+                P:{label:"Power",unit:"W"},
+                t:{label:"Time",unit:"s"}
+            },
+            solve:{
+                E:(x)=>x.P*x.t,
+                P:(x)=>x.E/x.t,
+                t:(x)=>x.E/x.P
+            },
+            working:{
+                E:(x,r)=>`E = P × t = ${x.P} × ${x.t} = ${r} J`,
+                P:(x,r)=>`P = E ÷ t = ${x.E} ÷ ${x.t} = ${r} W`,
+                t:(x,r)=>`t = E ÷ P = ${x.E} ÷ ${x.P} = ${r} s`
+            }
+        }
+    ]
+},
+
+{
+    id:"transformer",
+    title:"Transformer",
+    si:"ට්‍රාන්ස්ෆෝමරය",
+    icon:"🔄",
+    formulas:[
+        {
+            name:"Transformer Turns Ratio",
+            equation:"\\frac{V_p}{V_s}=\\frac{N_p}{N_s}",
+            vars:{
+                Vp:{label:"Primary voltage",unit:"V"},
+                Vs:{label:"Secondary voltage",unit:"V"},
+                Np:{label:"Primary turns",unit:"turns"},
+                Ns:{label:"Secondary turns",unit:"turns"}
+            },
+            solve:{
+                Vp:(x)=>x.Vs*x.Np/x.Ns,
+                Vs:(x)=>x.Vp*x.Ns/x.Np,
+                Np:(x)=>x.Vp*x.Ns/x.Vs,
+                Ns:(x)=>x.Vs*x.Np/x.Vp
+            },
+            working:{
+                Vp:(x,r)=>`Vp = Vs × Np ÷ Ns = ${x.Vs} × ${x.Np} ÷ ${x.Ns} = ${r} V`,
+                Vs:(x,r)=>`Vs = Vp × Ns ÷ Np = ${x.Vp} × ${x.Ns} ÷ ${x.Np} = ${r} V`,
+                Np:(x,r)=>`Np = Vp × Ns ÷ Vs = ${x.Vp} × ${x.Ns} ÷ ${x.Vs} = ${r} turns`,
+                Ns:(x,r)=>`Ns = Vs × Np ÷ Vp = ${x.Vs} × ${x.Np} ÷ ${x.Vp} = ${r} turns`
+            }
+        }
+    ]
+},
+
+{
+    id:"electromagnetic",
+    title:"Electromagnetism & Induction",
+    si:"විද්‍යුත් චුම්බකත්වය හා ප්‍රේරණය",
+    icon:"🧲",
+    formulas:[
+        {
+            name:"Electrical Power",
+            equation:"P=VI",
+            vars:{
+                P:{label:"Power",unit:"W"},
+                V:{label:"Voltage",unit:"V"},
+                I:{label:"Current",unit:"A"}
+            },
+            solve:{
+                P:(x)=>x.V*x.I,
+                V:(x)=>x.P/x.I,
+                I:(x)=>x.P/x.V
+            },
+            working:{
+                P:(x,r)=>`P = VI = ${x.V} × ${x.I} = ${r} W`,
+                V:(x,r)=>`V = P ÷ I = ${x.P} ÷ ${x.I} = ${r} V`,
+                I:(x,r)=>`I = P ÷ V = ${x.P} ÷ ${x.V} = ${r} A`
+            }
+        }
+    ]
+},
+
+{
+    id:"electronics",
+    title:"Electronics",
+    si:"ඉලෙක්ට්‍රොනික විද්‍යාව",
+    icon:"💻",
+    formulas:[
+        {
+            name:"Electrical Power",
+            equation:"P=VI",
+            vars:{
+                P:{label:"Power",unit:"W"},
+                V:{label:"Voltage",unit:"V"},
+                I:{label:"Current",unit:"A"}
+            },
+            solve:{
+                P:(x)=>x.V*x.I,
+                V:(x)=>x.P/x.I,
+                I:(x)=>x.P/x.V
+            },
+            working:{
+                P:(x,r)=>`P = VI = ${x.V} × ${x.I} = ${r} W`,
+                V:(x,r)=>`V = P ÷ I = ${x.P} ÷ ${x.I} = ${r} V`,
+                I:(x,r)=>`I = P ÷ V = ${x.P} ÷ ${x.V} = ${r} A`
+            }
+        }
+    ]
+}
+
+]
+
+};
+
+
+/* =========================================================
+   STATE
+========================================================= */
+
+let currentGrade = 10;
+let currentFormula = null;
+let currentLanguage = "si";
+
+
+/* =========================================================
+   INIT
+========================================================= */
+
+window.addEventListener("load",()=>{
+
+    setTimeout(()=>{
+        document.getElementById("loadingScreen")
+        .classList.add("hide");
+    },1800);
+
+    renderLessons();
+
+});
+
+
+/* =========================================================
+   RENDER LESSONS
+========================================================= */
+
+function renderLessons(filter=""){
+
+    const grid = document.getElementById("lessonGrid");
+
+    grid.innerHTML="";
+
+    const lessons = physicsData[currentGrade];
+
+    const query = filter.toLowerCase();
+
+    const filtered = lessons.filter(l=>
+        l.title.toLowerCase().includes(query) ||
+        l.si.toLowerCase().includes(query) ||
+        l.formulas.some(f=>
+            f.name.toLowerCase().includes(query)
+        )
+    );
+
+    if(filtered.length===0){
+
+        grid.innerHTML=`
+            <div style="
+                grid-column:1/-1;
+                padding:50px;
+                text-align:center;
+                color:#8ca0b5;
+            ">
+                🔎 No lessons found
+            </div>
+        `;
+
+        return;
+    }
+
+    filtered.forEach((lesson,index)=>{
+
+        const card=document.createElement("div");
+
+        card.className="lesson-card";
+
+        card.onclick=()=>{
+            openLesson(lesson.id);
+        };
+
+        card.innerHTML=`
+
+            <div class="lesson-number">
+                LESSON ${String(index+1).padStart(2,"0")}
+            </div>
+
+            <div class="lesson-icon">
+                ${lesson.icon}
+            </div>
+
+            <h3>
+                ${lesson.title}
+            </h3>
+
+            <p>
+                ${lesson.si}
+            </p>
+
+            <div class="lesson-count">
+                ${lesson.formulas.length} interactive formula${lesson.formulas.length>1?"s":""}
+            </div>
+
+        `;
+
+        grid.appendChild(card);
+
+    });
+
+}
+
+
+/* =========================================================
+   GRADE
+========================================================= */
+
+function changeGrade(grade,button){
+
+    currentGrade=grade;
+
+    document
+        .querySelectorAll(".grade-tab")
+        .forEach(b=>b.classList.remove("active"));
+
+    button.classList.add("active");
+
+    document.getElementById("formulaSection")
+        .style.display="none";
+
+    document.getElementById("lessonGrid")
+        .style.display="grid";
+
+    renderLessons();
+
+    showToast(
+        grade===10
+        ? "Grade 10 Physics loaded"
+        : "Grade 11 Physics loaded"
+    );
+}
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+function searchLessons(){
+
+    const value=document
+        .getElementById("searchInput")
+        .value;
+
+    renderLessons(value);
+
+}
+
+
+/* =========================================================
+   OPEN LESSON
+========================================================= */
+
+function openLesson(id){
+
+    const lesson=physicsData[currentGrade]
+        .find(l=>l.id===id);
+
+    if(!lesson)return;
+
+    document.getElementById("lessonGrid")
+        .style.display="none";
+
+    document.getElementById("formulaSection")
+        .style.display="block";
+
+    document.getElementById("selectedLessonTitle")
+        .innerText=lesson.title;
+
+    const grid=document.getElementById("formulaGrid");
+
+    grid.innerHTML="";
+
+    lesson.formulas.forEach((formula,index)=>{
+
+        const card=document.createElement("div");
+
+        card.className="formula-card";
+
+        const variables=Object.entries(formula.vars)
+            .map(([key,value])=>`
+
+                <div class="variable-pill">
+                    <b>${key}</b> — ${value.label}
+                    ${value.unit?` (${value.unit})`:""}
+                </div>
+
+            `).join("");
+
+        card.innerHTML=`
+
+            <div class="formula-top">
+
+                <div class="formula-title">
+                    ${formula.name}
+                </div>
+
+                <div class="formula-tag">
+                    SOLVER
+                </div>
+
+            </div>
+
+            <div class="equation"
+                 id="eq-${currentGrade}-${lesson.id}-${index}">
+            </div>
+
+            <div class="variable-info">
+                ${variables}
+            </div>
+
+            <button class="solve-btn">
+                🧮 Solve Formula
+            </button>
+
+        `;
+
+        card.querySelector(".solve-btn")
+            .onclick=()=>{
+                openSolver(formula);
+            };
+
+        grid.appendChild(card);
+
+        setTimeout(()=>{
+
+            const el=document.getElementById(
+                `eq-${currentGrade}-${lesson.id}-${index}`
+            );
+
+            if(window.katex){
+
+                katex.render(
+                    formula.equation,
+                    el,
+                    {
+                        throwOnError:false,
+                        displayMode:true
+                    }
+                );
+
+            }
+
+        },10);
+
+    });
+
+    window.scrollTo({
+        top:document.getElementById("formulaSection")
+            .offsetTop-90,
+        behavior:"smooth"
+    });
+
+}
+
+
+/* =========================================================
+   BACK
+========================================================= */
+
+function backToLessons(){
+
+    document.getElementById("formulaSection")
+        .style.display="none";
+
+    document.getElementById("lessonGrid")
+        .style.display="grid";
+
+    window.scrollTo({
+        top:document.getElementById("lessons").offsetTop-80,
+        behavior:"smooth"
+    });
+
+}
+
+
+/* =========================================================
+   SOLVER
+========================================================= */
+
+function openSolver(formula){
+
+    currentFormula=formula;
+
+    document.getElementById("solverModal")
+        .classList.add("show");
+
+    document.getElementById("solverTitle")
+        .innerText=formula.name;
+
+    const eq=document.getElementById("solverEquation");
+
+    eq.innerHTML="";
+
+    if(window.katex){
+
+        katex.render(
+            formula.equation,
+            eq,
+            {
+                throwOnError:false,
+                displayMode:true
+            }
+        );
+
+    }else{
+        eq.innerText=formula.equation;
+    }
+
+    const select=document.getElementById(
+        "targetVariable"
+    );
+
+    select.innerHTML="";
+
+    Object.entries(formula.vars)
+        .forEach(([key,value])=>{
+
+            const option=document.createElement("option");
+
+            option.value=key;
+
+            option.textContent=
+                `${key} — ${value.label}${value.unit?" ("+value.unit+")":""}`;
+
+            select.appendChild(option);
+
+        });
+
+    document.getElementById("calculationStage")
+        .classList.remove("show");
+
+    document.getElementById("resultBox")
+        .classList.remove("show");
+
+    renderInputs();
+
+}
+
+
+function renderInputs(){
+
+    if(!currentFormula)return;
+
+    const target=
+        document.getElementById("targetVariable")
+        .value;
+
+    const container=
+        document.getElementById("solverInputs");
+
+    container.innerHTML="";
+
+    Object.entries(currentFormula.vars)
+        .forEach(([key,value])=>{
+
+            if(key===target)return;
+
+            const row=document.createElement("div");
+
+            row.className="input-row";
+
+            row.innerHTML=`
+
+                <label>
+                    ${key} — ${value.label}
+                    <small>
+                        ${value.unit || "value"}
+                    </small>
+                </label>
+
+                <input
+                    type="number"
+                    step="any"
+                    id="input-${key}"
+                    placeholder="Enter ${key}"
+                >
+
+            `;
+
+            container.appendChild(row);
+
+        });
+
+}
+
+
+/* =========================================================
+   CALCULATION
+========================================================= */
+
+function startCalculation(){
+
+    if(!currentFormula)return;
+
+    const target=
+        document.getElementById("targetVariable")
+        .value;
+
+    const values={};
+
+    let invalid=false;
+
+    Object.keys(currentFormula.vars)
+        .forEach(key=>{
+
+            if(key===target)return;
+
+            const input=
+                document.getElementById(`input-${key}`);
+
+            if(!input){
+
+                invalid=true;
+                return;
+
+            }
+
+            const value=parseFloat(input.value);
+
+            if(!Number.isFinite(value)){
+
+                invalid=true;
+
+                input.style.borderColor="#fb7185";
+
+            }else{
+
+                input.style.borderColor="";
+
+                values[key]=value;
+
+            }
+
+        });
+
+    if(invalid){
+
+        showToast("කරුණාකර සියලු දත්ත ඇතුළත් කරන්න.");
+
+        return;
+    }
+
+    const stage=
+        document.getElementById("calculationStage");
+
+    const result=
+        document.getElementById("resultBox");
+
+    const calcText=
+        document.getElementById("calcText");
+
+    result.classList.remove("show");
+
+    stage.classList.add("show");
+
+    calcText.innerText=
+        "Formula එක calculate කරමින්...";
+
+    /*
+      Small delay intentionally added to create
+      the requested cartoon calculation animation.
+    */
+
+    setTimeout(()=>{
+
+        try{
+
+            const answer=
+                currentFormula.solve[target](values);
+
+            if(!Number.isFinite(answer)){
+                throw new Error("Invalid calculation");
+            }
+
+            const rounded=
+                smartRound(answer);
+
+            const unit=
+                currentFormula.vars[target].unit;
+
+            document.getElementById("resultValue")
+                .innerText=
+                    `${rounded}${unit?" "+unit:""}`;
+
+            document.getElementById("working")
+                .innerText=
+                    currentFormula.working[target]
+                    (values,rounded);
+
+            calcText.innerText=
+                "Calculation complete! 🎉";
+
+            stage.classList.remove("show");
+
+            result.classList.add("show");
+
+        }catch(error){
+
+            stage.classList.remove("show");
+
+            showToast(
+                "Calculation error. Check your values."
+            );
+
+        }
+
+    },1600);
+
+}
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function smartRound(number){
+
+    if(Math.abs(number)>=1000){
+        return Number(number.toFixed(2))
+            .toLocaleString();
+    }
+
+    if(Math.abs(number)<0.001){
+        return number.toExponential(3);
+    }
+
+    return Number(
+        number.toFixed(4)
+    ).toString();
+
+}
+
+
+function closeSolver(){
+
+    document.getElementById("solverModal")
+        .classList.remove("show");
+
+    currentFormula=null;
+
+}
+
+
+document.getElementById("solverModal")
+    .addEventListener("click",(e)=>{
+
+        if(e.target.id==="solverModal"){
+            closeSolver();
+        }
+
+    });
+
+
+function scrollToLessons(){
+
+    document.getElementById("lessons")
+        .scrollIntoView({
+            behavior:"smooth"
+        });
+
+}
+
+
+function showToast(message){
+
+    const toast=
+        document.getElementById("toast");
+
+    toast.innerText=message;
+
+    toast.classList.add("show");
+
+    setTimeout(()=>{
+        toast.classList.remove("show");
+    },2500);
+
+}
+
+
+/* =========================================================
+   LANGUAGE
+========================================================= */
+
+function toggleLanguage(){
+
+    currentLanguage=
+        currentLanguage==="si"
+        ?"en"
+        :"si";
+
+    const btn=
+        document.getElementById("languageButton");
+
+    const desc=
+        document.getElementById("heroDescription");
+
+    if(currentLanguage==="en"){
+
+        btn.innerText="EN";
+
+        desc.innerText=
+            "Learn O/L Physics formulas lesson by lesson. Select a formula, choose the quantity you want to find, enter the given values and get the answer.";
+
+    }else{
+
+        btn.innerText="සිං";
+
+        desc.innerText=
+            "O/L Physics සූත්‍ර පාඩමෙන් පාඩමට ඉගෙනගන්න. අවශ්‍ය සූත්‍රය තෝරලා, හොයන්න ඕන quantity එක තෝරලා, දත්ත ඇතුළත් කළාම step-by-step පිළිතුර ලබාගන්න.";
+
+    }
+
+}
+
+
+/* =========================================================
+   QUICK GUIDE
+========================================================= */
+
+function showQuickGuide(){
+
+    alert(
+`⚡ O/L Physics Formula Solver
+
+1. Grade 10 හෝ Grade 11 තෝරන්න.
+2. පාඩම තෝරන්න.
+3. අවශ්‍ය Formula එක තෝරන්න.
+4. "Solve Formula" ඔබන්න.
+5. හොයන්න ඕන quantity එක තෝරන්න.
+6. දී ඇති values ඇතුළත් කරන්න.
+7. Calculate කරන්න.
+
+උදාහරණය:
+
+v = d / t
+
+v හොයනවා නම්:
+Distance + Time ඇතුළත් කරන්න.
+
+d හොයනවා නම්:
+Speed + Time ඇතුළත් කරන්න.
+
+t හොයනවා නම්:
+Distance + Speed ඇතුළත් කරන්න.`
+    );
+
+}
+
+
+function showAbout(){
+
+    alert(
+`O/L Physics Formula Solver
+
+🇱🇰 Sri Lankan O/L Science students සඳහා නිර්මාණය කළ interactive revision tool එකකි.
+
+• Grade 10 / Grade 11
+• Lesson-by-lesson formulas
+• Variable selector
+• Automatic calculation
+• Step-by-step working
+• Animated calculation screen
+• Sinhala / English interface`
+    );
+
+}
+
+</script>
+
+</body>
+</html>
